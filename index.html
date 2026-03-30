@@ -6,6 +6,54 @@
     <title>Document</title>
 </head>
 <body>
-    
+    <div class="app-wrapper">
+ 
+  <!-- HEADER -->
+  <div class="header">
+    <div class="logo-badge">🎓</div>
+    <div class="header-text">
+      <h1><span>Uni</span>guide</h1>
+      <p>State University of Bangladesh · Admission Help Desk</p>
+    </div>
+    <div class="header-right">
+      <div class="status-pill">
+        <div class="status-dot"></div>
+        Available 24/7
+      </div>
+      <div class="lang-toggle">
+        <button class="lang-btn active" onclick="setLang('en')" id="btn-en">English</button>
+        <button class="lang-btn" onclick="setLang('bn')" id="btn-bn">বাংলা</button>
+      </div>
+    </div>
+  </div>
+ 
+  <!-- QUICK TOPIC CHIPS -->
+  <div class="topics-bar">
+    <span>Quick topics:</span>
+    <div class="topic-chip" onclick="quickAsk('admission requirements')">📋 Requirements</div>
+    <div class="topic-chip" onclick="quickAsk('GPA requirement')">📊 GPA Criteria</div>
+    <div class="topic-chip" onclick="quickAsk('tuition fees')">💰 Tuition Fees</div>
+    <div class="topic-chip" onclick="quickAsk('scholarship')">🏆 Scholarships</div>
+    <div class="topic-chip" onclick="quickAsk('application deadline')">📅 Deadlines</div>
+    <div class="topic-chip" onclick="quickAsk('required documents')">📄 Documents</div>
+    <div class="topic-chip" onclick="quickAsk('how to apply')">✍️ How to Apply</div>
+    <div class="topic-chip" onclick="quickAsk('contact')">📞 Contact</div>
+  </div>
+ 
+  <!-- CHAT AREA -->
+  <div class="chat-area" id="chatArea"></div>
+ 
+  <!-- INPUT -->
+  <div class="input-area">
+    <div class="input-wrap">
+      <textarea id="userInput" rows="1" placeholder="Ask anything about admissions…" onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
+    </div>
+    <button class="clear-btn" onclick="clearChat()" title="Clear chat">🗑️</button>
+    <button class="send-btn" onclick="sendMessage()" title="Send">➤</button>
+  </div>
+ 
+</div>
+ 
+<div class="footer-note">Uniguide · CSE-0408 Artificial Intelligence Lab · State University of Bangladesh</div>
 </body>
 </html>
