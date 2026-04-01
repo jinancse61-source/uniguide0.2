@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Uniguide – Sign In</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body class="login-page">
+ 
+  <div class="lcard">
+    <div class="lhdr">
+      <div class="llogo">🎓</div>
+      <h1><span>Uni</span>guide</h1>
+      <p>State University of Bangladesh &middot; Admission Help Desk</p>
+    </div>
+ 
+    <div class="lbody">
+      <p class="ltag">Sign in to access your personalized admission assistant.</p>
+ 
+      <!-- Full Name -->
+      <div class="fg">
+        <label for="lName">Full Name</label>
+        <div class="fw" id="fw-name">
+          <span class="ico">👤</span>
+          <input type="text" id="lName" placeholder="e.g. Rahim Uddin" autocomplete="name" />
+        </div>
+        <div class="ferr" id="fe-name">Please enter your full name.</div>
+      </div>
+ 
+      <!-- Email -->
+      <div class="fg">
+        <label for="lEmail">Email Address</label>
+        <div class="fw" id="fw-email">
+          <span class="ico">✉️</span>
+          <input type="email" id="lEmail" placeholder="you@example.com" autocomplete="email" />
+        </div>
+        <div class="ferr" id="fe-email">Please enter a valid email address.</div>
+      </div>
+ 
+      <!-- Password -->
+      <div class="fg">
+        <label for="lPass">Password</label>
+        <div class="fw" id="fw-pass">
+          <span class="ico">🔒</span>
+          <input type="password" id="lPass" placeholder="Min. 6 characters" />
+        </div>
+        <div class="ferr" id="fe-pass">Password must be at least 6 characters.</div>
+      </div>
+ 
+      <button class="lbtn" id="loginBtn">Sign In &nbsp;→</button>
+      <p class="lfn">Uniguide &middot; CSE-0408 AI Lab &middot; State University of Bangladesh</p>
+    </div>
+  </div>
+ 
+  <div class="toast" id="toast"></div>
+ 
+  <script src="script.js"></script>
+</body>
+</html>

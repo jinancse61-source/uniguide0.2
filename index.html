@@ -1,62 +1,110 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-   <title>Uniguide – University Admission Help Desk</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
-<link rel="stylesheet" href="styles.css"/>
-<script src="script.js" defer></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Uniguide – University Admission Help Desk</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="script.js" href="script.js" />
 </head>
-<body>
-    <div class="app-wrapper">
+<body class="chat-page">
  
-  <!-- HEADER -->
-  <div class="header">
-    <div class="logo-badge">🎓</div>
-    <div class="header-text">
-      <h1><span>Uni</span>guide</h1>
-      <p>State University of Bangladesh · Admission Help Desk</p>
+  <!-- ══════════ SIDEBAR ══════════ -->
+  <aside class="sidebar" id="sidebar">
+ 
+    <div class="sb-top">
+      <button class="sb-btn has-tip" id="collapseBtn">
+        <span class="sb-icon">☰</span>
+        <span class="sb-label">Close sidebar</span>
+        <span class="tip">Close sidebar</span>
+      </button>
+      <button class="sb-btn new-chat-btn has-tip" id="newChatBtn">
+        <span class="sb-icon">＋</span>
+        <span class="sb-label">New Chat</span>
+        <span class="tip">New chat</span>
+      </button>
     </div>
-    <div class="header-right">
-      <div class="status-pill">
-        <div class="status-dot"></div>
-        Available 24/7
+ 
+    <div class="sb-mid" id="sbMid">
+      <div class="sb-sec-lbl">Recent</div>
+      <div id="chatList">
+        <div class="sb-empty" id="emptyMsg">No chats yet.<br>Start a new conversation!</div>
       </div>
-      <div class="lang-toggle">
-        <button class="lang-btn active" onclick="setLang('en')" id="btn-en">English</button>
-        <button class="lang-btn" onclick="setLang('bn')" id="btn-bn">বাংলা</button>
+    </div>
+ 
+    <div class="sb-bot">
+      <button class="profile-btn has-tip" id="profileBtn">
+        <div class="avatar" id="sbAvatar">U</div>
+        <div class="profile-info">
+          <div class="pname" id="sbName">User</div>
+          <div class="phint">View profile</div>
+        </div>
+        <span class="tip">Profile</span>
+      </button>
+ 
+      <div class="pdrop" id="pdrop">
+        <div class="dd-email" id="ddEmail"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="a2d7d1c7d0e2c7dac3cfd2cec78cc1cdcf">[email&#160;protected]</a></div>
+        <div class="dd-div"></div>
+        <button class="dd-item"><span class="dd-ico">⚙️</span>Settings</button>
+        <button class="dd-item" id="ddLang"><span class="dd-ico">🌐</span>Language</button>
+        <button class="dd-item"><span class="dd-ico">ℹ️</span>Learn More</button>
+        <div class="dd-div"></div>
+        <button class="dd-item danger" id="ddLogout"><span class="dd-ico">🚪</span>Logout</button>
       </div>
     </div>
-  </div>
+  </aside>
  
-  <!-- QUICK TOPIC CHIPS -->
-  <div class="topics-bar">
-    <span>Quick topics:</span>
-    <div class="topic-chip" onclick="quickAsk('admission requirements')">📋 Requirements</div>
-    <div class="topic-chip" onclick="quickAsk('GPA requirement')">📊 GPA Criteria</div>
-    <div class="topic-chip" onclick="quickAsk('tuition fees')">💰 Tuition Fees</div>
-    <div class="topic-chip" onclick="quickAsk('scholarship')">🏆 Scholarships</div>
-    <div class="topic-chip" onclick="quickAsk('application deadline')">📅 Deadlines</div>
-    <div class="topic-chip" onclick="quickAsk('required documents')">📄 Documents</div>
-    <div class="topic-chip" onclick="quickAsk('how to apply')">✍️ How to Apply</div>
-    <div class="topic-chip" onclick="quickAsk('contact')">📞 Contact</div>
-  </div>
+  <!-- Mobile overlay -->
+  <div class="sb-overlay" id="sbOverlay"></div>
  
-  <!-- CHAT AREA -->
-  <div class="chat-area" id="chatArea"></div>
+  <!-- ══════════ MAIN ══════════ -->
+  <main class="main">
  
-  <!-- INPUT -->
-  <div class="input-area">
-    <div class="input-wrap">
-      <textarea id="userInput" rows="1" placeholder="Ask anything about admissions…" onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
+    <!-- Topbar -->
+    <div class="topbar">
+      <button class="mob-toggle" id="mobToggle" aria-label="Open sidebar">☰</button>
+      <div class="topbar-logo">
+        <div class="topbar-badge">🎓</div>
+        <div>
+          <span class="topbar-title"><span>Uni</span>guide</span>
+          <span class="topbar-sub">&middot; State University of Bangladesh</span>
+        </div>
+      </div>
+      <div class="topbar-right">
+        <div class="status-pill">
+          <div class="status-dot"></div>Available 24/7
+        </div>
+        <div class="lang-toggle">
+          <button class="lang-btn active" id="btn-en" onclick="setLang('en')">EN</button>
+          <button class="lang-btn" id="btn-bn" onclick="setLang('bn')">বাং</button>
+        </div>
+      </div>
     </div>
-    <button class="clear-btn" onclick="clearChat()" title="Clear chat">🗑️</button>
-    <button class="send-btn" onclick="sendMessage()" title="Send">➤</button>
-  </div>
  
-</div>
+    <!-- Chat Area -->
+    <div class="chat-area" id="chatArea">
+      <!-- Welcome screen injected by JS -->
+    </div>
  
-<div class="footer-note">Uniguide · CSE-0408 Artificial Intelligence Lab · State University of Bangladesh</div>
-</body>
-</html>
+    <!-- Input -->
+    <div class="input-wrap-outer">
+      <div class="input-row">
+        <textarea
+          id="userInput"
+          rows="1"
+          placeholder="Ask anything about admissions…"
+          onkeydown="handleKey(event)"
+          oninput="autoResize(this)"
+        ></textarea>
+        <button class="ibtn clear-btn" onclick="clearCurrentChat()" title="Clear chat">🗑️</button>
+        <button class="ibtn send-btn" onclick="sendMessage()" title="Send">➤</button>
+      </
+
+      </div>
+    </div>
+    </div>
+      <script src="script.js"></script>
+    </main>
+    </body>
+    </html>
