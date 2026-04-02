@@ -951,55 +951,51 @@ body.chat-page {
   .topbar-title { font-size: .92rem; }
 }
 
-/* ════════════════════════════════════════════
-   PART 1 — WELCOME PANEL
-   Shows only once per session after login
-════════════════════════════════════════════ */
-
-/* Existing .welcome-screen stays for backward compat,
-   but the new panel uses .welcome-panel */
+/* ════════════════════════════════════════════════
+   WELCOME PANEL — session-based, once after login
+════════════════════════════════════════════════ */
 .welcome-panel {
   flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 16px;
+  gap: 14px;
   padding: 48px 24px;
   text-align: center;
-  animation: wpIn .45s cubic-bezier(.22,1,.36,1) both;
+  animation: wpFadeIn .45s cubic-bezier(.22,1,.36,1) both;
 }
-@keyframes wpIn {
+@keyframes wpFadeIn {
   from { opacity: 0; transform: translateY(20px); }
-  to   { opacity: 1; transform: translateY(0);    }
+  to   { opacity: 1; transform: translateY(0); }
 }
 .welcome-panel.wp-fade-out {
-  animation: wpOut .34s ease forwards;
+  animation: wpFadeOut .32s ease forwards;
 }
-@keyframes wpOut {
-  from { opacity: 1; transform: translateY(0);    }
-  to   { opacity: 0; transform: translateY(-14px); }
+@keyframes wpFadeOut {
+  from { opacity: 1; transform: translateY(0); }
+  to   { opacity: 0; transform: translateY(-12px); }
 }
 
-/* Avatar circle showing first letter of user name */
+/* Avatar circle with user initial */
 .wp-avatar {
-  width: 76px;
-  height: 76px;
+  width: 74px;
+  height: 74px;
   border-radius: 50%;
   background: linear-gradient(135deg, var(--gold), var(--gold-light));
   display: flex;
   align-items: center;
   justify-content: center;
   font-family: 'Playfair Display', serif;
-  font-size: 2rem;
+  font-size: 1.9rem;
   font-weight: 700;
   color: var(--navy);
-  box-shadow: 0 8px 28px rgba(201,168,76,.35), 0 2px 8px rgba(201,168,76,.2);
+  box-shadow: 0 8px 28px rgba(201,168,76,.35);
   flex-shrink: 0;
-  margin-bottom: 4px;
+  margin-bottom: 2px;
 }
 
-/* "Hello, [Name]" heading */
+/* "Hello, [Name]" */
 .wp-greeting {
   font-family: 'Playfair Display', serif;
   font-size: 1.65rem;
@@ -1007,13 +1003,11 @@ body.chat-page {
   color: var(--text-dark);
   line-height: 1.2;
 }
-.wp-greeting span {
-  color: var(--gold);
-}
+.wp-greeting span { color: var(--gold); }
 
-/* Decorative gold divider line */
+/* Gold divider */
 .wp-rule {
-  width: 44px;
+  width: 40px;
   height: 3px;
   border-radius: 3px;
   background: linear-gradient(90deg, var(--gold), var(--gold-light));
@@ -1022,37 +1016,36 @@ body.chat-page {
 
 /* Subtitle */
 .wp-subtitle {
-  font-size: .92rem;
+  font-size: .9rem;
   color: var(--text-light);
   line-height: 1.6;
-  max-width: 310px;
+  max-width: 300px;
 }
-.wp-subtitle strong {
-  color: var(--text-mid);
-  font-weight: 600;
-}
+.wp-subtitle strong { color: var(--text-mid); }
 
-/* Suggestion chips row */
+/* Chips row */
 .wp-chips {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
   justify-content: center;
-  max-width: 440px;
+  max-width: 430px;
   margin-top: 4px;
 }
-
 .wp-chip {
-  padding: 7px 16px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 15px;
   background: var(--white);
-  border: 1px solid rgba(201,168,76,.28);
+  border: 1px solid rgba(201,168,76,.25);
   border-radius: 22px;
-  font-size: .75rem;
+  font-size: .74rem;
   font-family: 'DM Sans', sans-serif;
   font-weight: 500;
   color: var(--text-mid);
   cursor: pointer;
-  transition: background .18s, border-color .18s, color .18s, transform .18s, box-shadow .18s;
+  transition: all .18s;
   box-shadow: 0 1px 4px rgba(0,0,0,.05);
 }
 .wp-chip:hover {
@@ -1062,11 +1055,8 @@ body.chat-page {
   transform: translateY(-2px);
   box-shadow: 0 4px 14px rgba(201,168,76,.18);
 }
-.wp-chip:active {
-  transform: translateY(0);
-}
 
-/* Empty state for new / switched chats (no welcome panel) */
+/* Empty state for new / switched chats */
 .empty-state {
   flex: 1;
   display: flex;
@@ -1078,14 +1068,14 @@ body.chat-page {
   text-align: center;
 }
 .empty-state-icon {
-  width: 56px;
-  height: 56px;
+  width: 54px;
+  height: 54px;
   background: linear-gradient(135deg, var(--navy-mid), var(--navy-light));
   border-radius: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 26px;
+  font-size: 24px;
   box-shadow: 0 6px 18px rgba(13,27,42,.12);
 }
 .empty-state p {
@@ -1096,12 +1086,12 @@ body.chat-page {
 }
 
 
-/* ════════════════════════════════════════════
-   PART 2 — QUICK ACTIONS MENU
-   Modern grid-dot icon + popup in input area
-════════════════════════════════════════════ */
+/* ════════════════════════════════════════════════
+   QUICK ACTIONS — icon button + popup menu
+   Uses pure CSS grid-of-dots (works on GitHub Pages)
+════════════════════════════════════════════════ */
 
-/* Wrapper keeps the button + popup together */
+/* Wrapper: positions the popup relative to the button */
 .qa-wrap {
   position: relative;
   display: flex;
@@ -1109,7 +1099,7 @@ body.chat-page {
   flex-shrink: 0;
 }
 
-/* The icon button */
+/* The icon trigger button */
 .qa-btn {
   width: 34px;
   height: 34px;
@@ -1121,44 +1111,57 @@ body.chat-page {
   align-items: center;
   justify-content: center;
   color: var(--text-mid);
-  transition: background .18s, border-color .18s, color .18s, transform .2s;
   flex-shrink: 0;
+  transition: background .18s, border-color .18s, color .18s, transform .2s;
   position: relative;
 }
 .qa-btn:hover {
   background: rgba(201,168,76,.1);
   border-color: rgba(201,168,76,.4);
   color: var(--gold);
-  transform: rotate(30deg);
 }
 .qa-btn.qa-active {
-  background: rgba(201,168,76,.14);
+  background: rgba(201,168,76,.15);
   border-color: var(--gold);
   color: var(--gold);
   transform: rotate(45deg);
 }
 
-/* Native title tooltip is used — no pseudo-element needed */
+/* Pure CSS 3×3 grid of dots icon — renders identically everywhere */
+.qa-dots-icon {
+  display: grid;
+  grid-template-columns: repeat(3, 4px);
+  grid-template-rows: repeat(3, 4px);
+  gap: 2.5px;
+}
+.qa-dots-icon span {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: currentColor;
+  display: block;
+}
+
+/* Tooltip via native title attribute — no pseudo-element needed */
 
 /* The popup panel */
 .qa-menu {
   position: absolute;
   bottom: calc(100% + 10px);
   left: 0;
-  width: 204px;
+  width: 210px;
   background: var(--white);
   border: 1px solid rgba(13,27,42,.1);
   border-radius: 14px;
-  box-shadow: 0 10px 36px rgba(13,27,42,.13), 0 2px 8px rgba(13,27,42,.06);
+  box-shadow: 0 10px 36px rgba(13,27,42,.13), 0 2px 8px rgba(13,27,42,.05);
   overflow: hidden;
   z-index: 500;
-
-  /* Hidden state */
+  /* Hidden by default */
   opacity: 0;
   pointer-events: none;
   transform-origin: bottom left;
-  transform: scale(.93) translateY(8px);
-  transition: opacity .2s ease, transform .22s cubic-bezier(.34,1.56,.64,1);
+  transform: scale(.92) translateY(8px);
+  transition: opacity .18s ease, transform .22s cubic-bezier(.34,1.56,.64,1);
 }
 .qa-menu.qa-open {
   opacity: 1;
@@ -1177,7 +1180,7 @@ body.chat-page {
   background: rgba(13,27,42,.02);
 }
 
-/* Each menu item */
+/* Menu items */
 .qa-item {
   display: flex;
   align-items: center;
@@ -1192,42 +1195,74 @@ body.chat-page {
   color: var(--text-dark);
   cursor: pointer;
   text-align: left;
-  transition: background .14s, color .14s, padding-left .14s;
+  transition: background .13s, color .13s, padding-left .13s;
 }
+.qa-item:not(:last-child) { border-bottom: 1px solid rgba(13,27,42,.04); }
 .qa-item:hover {
-  background: linear-gradient(90deg, rgba(201,168,76,.09), rgba(201,168,76,.03));
+  background: linear-gradient(90deg, rgba(201,168,76,.09), rgba(201,168,76,.02));
   color: var(--navy);
   padding-left: 18px;
-}
-.qa-item:not(:last-child) {
-  border-bottom: 1px solid rgba(13,27,42,.04);
 }
 
 /* Emoji icon inside each item */
 .qa-ico {
   font-size: 15px;
-  width: 26px;
-  height: 26px;
+  width: 28px;
+  height: 28px;
   border-radius: 7px;
   background: rgba(13,27,42,.05);
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  transition: background .14s;
+  transition: background .13s;
 }
-.qa-item:hover .qa-ico {
-  background: rgba(201,168,76,.18);
+.qa-item:hover .qa-ico { background: rgba(201,168,76,.16); }
+
+
+/* ════════════════════════════════════════════════
+   UPDATED BUTTON ICONS
+   Clear button: trash/bin SVG
+   Send button:  paper-plane SVG
+════════════════════════════════════════════════ */
+.clear-btn {
+  background: rgba(231,76,60,.06);
+  border: 1px solid rgba(231,76,60,.16) !important;
+  color: var(--text-light);
+}
+.clear-btn:hover {
+  background: rgba(231,76,60,.14);
+  color: var(--red);
+  transform: translateY(-1px);
 }
 
-/* On mobile: open popup upward and align to right edge */
+.send-btn {
+  background: linear-gradient(135deg, var(--gold), var(--gold-light));
+  box-shadow: 0 3px 10px rgba(201,168,76,.3);
+  color: var(--navy);
+}
+.send-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 5px 16px rgba(201,168,76,.45);
+}
+
+/* SVG icons inside buttons inherit button color */
+.ibtn svg { pointer-events: none; }
+
+
+/* ════════════════════════════════════════════════
+   RESPONSIVE ADDITIONS
+════════════════════════════════════════════════ */
 @media (max-width: 480px) {
+  /* Popup opens to the right on small screens */
   .qa-menu {
     left: auto;
     right: 0;
     transform-origin: bottom right;
-    width: 190px;
+    width: 192px;
   }
-  .wp-greeting { font-size: 1.35rem; }
-  .wp-avatar   { width: 62px; height: 62px; font-size: 1.6rem; }
+  .wp-greeting  { font-size: 1.35rem; }
+  .wp-avatar    { width: 60px; height: 60px; font-size: 1.55rem; }
+  .wp-chips     { gap: 6px; }
+  .wp-chip      { font-size: .70rem; padding: 6px 12px; }
 }
