@@ -1,30 +1,23 @@
 /* ══════════════════════════════════════════════════════
-   UNIGUIDE — script.js  (fixed)
+   UNIGUIDE — script.js
+   + Welcome Panel (session-based)
+   + Quick Actions Menu
 ══════════════════════════════════════════════════════ */
- 
-/* ──────────────────────────────────────
-   SAFE STORAGE — works on file:// AND http://
-────────────────────────────────────── */
+
+/* ── Safe Storage ── */
 const _mem = {};
 const store = {
   get(k)    { try { return localStorage.getItem(k); }    catch(e) { return _mem[k] != null ? _mem[k] : null; } },
   set(k, v) { try { localStorage.setItem(k, v); }        catch(e) { _mem[k] = v; } },
   del(k)    { try { localStorage.removeItem(k); }        catch(e) { delete _mem[k]; } }
 };
- 
-document.addEventListener('DOMContentLoaded', () => {
-  if (document.body.classList.contains('login-page')) {
-    initLoginPage();
-  } else if (document.body.classList.contains('chat-page')) {
-    initChatPage();
-  }
-});
- 
-/* ── Storage helpers ── */
+
+/* ── Storage Keys ── */
 const AK = 'ug_auth';
 const CK = 'ug_chats';
 const VK = 'ug_active';
- 
+const WK = 'ug_welcome_seen'; // NEW: welcome panel flag (sessionStorage-style via store)
+
 const getAuth   = () => { try { return JSON.parse(store.get(AK)) || null; } catch(e) { return null; } };
 const setAuth   = d  => store.set(AK, JSON.stringify(d));
 const clearAuth = () => store.del(AK);
@@ -32,8 +25,19 @@ const getChats  = () => { try { return JSON.parse(store.get(CK)) || []; } catch(
 const saveChats = c  => store.set(CK, JSON.stringify(c));
 const getActId  = () => store.get(VK) || null;
 const setActId  = id => store.set(VK, id);
- 
-/* ── Toast ── */
+
+/* ── Auto page detection ── */
+document.addEventListener('DOMContentLoaded', () => {
+  if (document.body.classList.contains('login-page')) {
+    initLoginPage();
+  } else if (document.body.classList.contains('chat-page')) {
+    initChatPage();
+  }
+});
+
+/* ══════════════════════════════════════
+   TOAST
+══════════════════════════════════════ */
 function toast(msg, type) {
   type = type || '';
   var t = document.getElementById('toast');
@@ -43,36 +47,36 @@ function toast(msg, type) {
   setTimeout(function(){ t.classList.add('show'); }, 10);
   setTimeout(function(){ t.classList.remove('show'); }, 2800);
 }
- 
+
 /* ══════════════════════════════════════
    LOGIN PAGE
 ══════════════════════════════════════ */
 function initLoginPage() {
   var auth = getAuth();
   if (auth && auth.isLoggedIn) { window.location.href = 'index.html'; return; }
- 
+
   var loginBtn = document.getElementById('loginBtn');
   if (!loginBtn) return;
   loginBtn.addEventListener('click', handleLogin);
- 
+
   document.addEventListener('keydown', function(e) {
     if (e.key === 'Enter') handleLogin();
   });
- 
+
   ['lName','lEmail','lPass'].forEach(function(id) {
     var map = { lName:'name', lEmail:'email', lPass:'pass' };
     var el = document.getElementById(id);
     if (el) el.addEventListener('input', function(){ setFW(map[id], false); });
   });
 }
- 
+
 function setFW(field, hasError) {
   var fw = document.getElementById('fw-' + field);
   var fe = document.getElementById('fe-' + field);
   if (fw) fw.classList.toggle('err', hasError);
   if (fe) fe.classList.toggle('show', hasError);
 }
- 
+
 function handleLogin() {
   var nameEl  = document.getElementById('lName');
   var emailEl = document.getElementById('lEmail');
@@ -80,33 +84,35 @@ function handleLogin() {
   var name  = (nameEl  ? nameEl.value  : '').trim();
   var email = (emailEl ? emailEl.value : '').trim();
   var pass  = (passEl  ? passEl.value  : '').trim();
- 
+
   var ok = true;
   if (!name)                                             { setFW('name',  true); ok = false; } else setFW('name',  false);
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))       { setFW('email', true); ok = false; } else setFW('email', false);
   if (!pass || pass.length < 6)                         { setFW('pass',  true); ok = false; } else setFW('pass',  false);
- 
+
   if (!ok) { toast('Fix the errors above.', 'bad'); return; }
- 
+
   var btn = document.getElementById('loginBtn');
   if (btn) { btn.disabled = true; btn.textContent = 'Signing in…'; }
- 
+
+  // Clear the welcome flag so it shows fresh after each login
+  store.del(WK);
+
   setAuth({ isLoggedIn: true, name: name, email: email });
   toast('Welcome, ' + name + '!', 'ok');
   setTimeout(function() { window.location.href = 'index.html'; }, 900);
-  console.log("clicked");
 }
- 
+
 /* ══════════════════════════════════════
-   CHAT PAGE
+   CHAT PAGE INIT
 ══════════════════════════════════════ */
 var currentMsgs = [];
 var lang = 'en';
- 
+
 function initChatPage() {
   var auth = getAuth();
   if (!auth || !auth.isLoggedIn) { window.location.href = 'login.html'; return; }
- 
+
   var name = auth.name || 'User';
   var nameEl   = document.getElementById('sbName');
   var avatarEl = document.getElementById('sbAvatar');
@@ -114,47 +120,125 @@ function initChatPage() {
   if (nameEl)   nameEl.textContent   = name;
   if (avatarEl) avatarEl.textContent = name[0].toUpperCase();
   if (emailEl)  emailEl.textContent  = auth.email || '';
- 
-  renderWelcomeScreen();
- 
-  var actId = getActId();
-  var chats = getChats();
-  if (actId && chats.find(function(c){ return c.id === actId; })) {
-    loadChat(actId);
+
+  // ── PART 1: Welcome Panel logic ──
+  var hasSeenWelcome = store.get(WK);
+  if (!hasSeenWelcome) {
+    // First load after login → show welcome panel, then set flag
+    renderWelcomePanel(name);
+    store.set(WK, 'true');
+  } else {
+    // Subsequent loads → restore last chat or empty state (NO welcome panel)
+    var actId = getActId();
+    var chats = getChats();
+    if (actId && chats.find(function(c){ return c.id === actId; })) {
+      loadChat(actId);
+    } else {
+      renderEmptyState();
+    }
   }
- 
+
   renderChatList();
   bindChatPageEvents();
+  initQuickActions(); // ── PART 2
 }
- 
-/* ── Welcome Screen ── */
-function renderWelcomeScreen() {
+
+/* ══════════════════════════════════════
+   PART 1 — WELCOME PANEL
+   Shows ONLY once after login per session
+══════════════════════════════════════ */
+function renderWelcomePanel(name) {
   var area = document.getElementById('chatArea');
   if (!area) return;
-  if (currentMsgs.length) return;
   area.innerHTML = '';
-  var ws = document.createElement('div');
-  ws.className = 'welcome-screen';
-  ws.id = 'welcomeScreen';
-  ws.innerHTML =
-    '<div class="wico">🎓</div>' +
-    '<h2><span>Uni</span>guide</h2>' +
-    '<p>Your AI-powered admission assistant for <strong>State University of Bangladesh</strong>.<br>' +
-    'Ask anything about admissions, fees, deadlines, and more!</p>' +
-    '<div class="welcome-hint">' +
-    '<button class="welcome-chip" onclick="quickAsk(\'admission requirements\')">📋 Requirements</button>' +
-    '<button class="welcome-chip" onclick="quickAsk(\'GPA requirement\')">📊 GPA</button>' +
-    '<button class="welcome-chip" onclick="quickAsk(\'tuition fees\')">💰 Fees</button>' +
-    '<button class="welcome-chip" onclick="quickAsk(\'scholarship\')">🏆 Scholarships</button>' +
-    '<button class="welcome-chip" onclick="quickAsk(\'application deadline\')">📅 Deadlines</button>' +
-    '<button class="welcome-chip" onclick="quickAsk(\'required documents\')">📄 Documents</button>' +
-    '<button class="welcome-chip" onclick="quickAsk(\'how to apply\')">✍️ How to Apply</button>' +
-    '<button class="welcome-chip" onclick="quickAsk(\'contact\')">📞 Contact</button>' +
+
+  var initial = name ? name[0].toUpperCase() : '?';
+
+  var panel = document.createElement('div');
+  panel.className = 'welcome-panel';
+  panel.id = 'welcomePanel';
+  panel.innerHTML =
+    '<div class="wp-avatar">' + initial + '</div>' +
+    '<div class="wp-greeting">Hello, <span>' + escHtml(name) + '</span> 👋</div>' +
+    '<div class="wp-rule"></div>' +
+    '<div class="wp-subtitle">How can <strong>UniGuide</strong> help you today?</div>' +
+    '<div class="wp-chips">' +
+      '<button class="wp-chip" onclick="quickAsk(\'admission requirements\')">📋 Requirements</button>' +
+      '<button class="wp-chip" onclick="quickAsk(\'GPA requirement\')">📊 GPA</button>' +
+      '<button class="wp-chip" onclick="quickAsk(\'tuition fees\')">💰 Fees</button>' +
+      '<button class="wp-chip" onclick="quickAsk(\'scholarship\')">🏆 Scholarships</button>' +
+      '<button class="wp-chip" onclick="quickAsk(\'application deadline\')">📅 Deadlines</button>' +
+      '<button class="wp-chip" onclick="quickAsk(\'required documents\')">📄 Documents</button>' +
+      '<button class="wp-chip" onclick="quickAsk(\'how to apply\')">✍️ How to Apply</button>' +
+      '<button class="wp-chip" onclick="quickAsk(\'contact\')">📞 Contact</button>' +
     '</div>';
-  area.appendChild(ws);
+
+  area.appendChild(panel);
 }
- 
-/* ── Chat Data Helpers ── */
+
+// Fades out and removes the welcome panel, then runs callback
+function hideWelcomePanel(callback) {
+  var panel = document.getElementById('welcomePanel');
+  if (!panel) { if (callback) callback(); return; }
+  panel.classList.add('wp-fade-out');
+  setTimeout(function() {
+    if (panel.parentElement) panel.parentElement.removeChild(panel);
+    if (callback) callback();
+  }, 340);
+}
+
+// Simple empty state for new chats / switched chats (NO welcome panel)
+function renderEmptyState() {
+  var area = document.getElementById('chatArea');
+  if (!area) return;
+  area.innerHTML =
+    '<div class="empty-state">' +
+      '<div class="empty-state-icon">🎓</div>' +
+      '<p>Type a message or pick a quick action to get started.</p>' +
+    '</div>';
+}
+
+/* ══════════════════════════════════════
+   PART 2 — QUICK ACTIONS MENU
+══════════════════════════════════════ */
+function initQuickActions() {
+  var qaBtn  = document.getElementById('qaBtn');
+  var qaMenu = document.getElementById('qaMenu');
+  if (!qaBtn || !qaMenu) return;
+
+  // Toggle on icon click
+  qaBtn.addEventListener('click', function(e) {
+    e.stopPropagation();
+    var open = qaMenu.classList.contains('qa-open');
+    if (open) { closeQaMenu(); } else { openQaMenu(); }
+  });
+
+  // Close when clicking anywhere outside
+  document.addEventListener('click', function() { closeQaMenu(); });
+
+  // Prevent menu clicks from bubbling up and closing the menu
+  qaMenu.addEventListener('click', function(e) { e.stopPropagation(); });
+}
+
+function openQaMenu() {
+  var qaBtn  = document.getElementById('qaBtn');
+  var qaMenu = document.getElementById('qaMenu');
+  if (!qaBtn || !qaMenu) return;
+  qaMenu.classList.add('qa-open');
+  qaBtn.classList.add('qa-active');
+}
+
+function closeQaMenu() {
+  var qaBtn  = document.getElementById('qaBtn');
+  var qaMenu = document.getElementById('qaMenu');
+  if (!qaBtn || !qaMenu) return;
+  qaMenu.classList.remove('qa-open');
+  qaBtn.classList.remove('qa-active');
+}
+
+/* ══════════════════════════════════════
+   CHAT DATA HELPERS
+══════════════════════════════════════ */
 function createChat(title) {
   var id = 'c_' + Date.now();
   var chats = getChats();
@@ -176,12 +260,12 @@ function saveTitle(id, title) {
   var i = chats.findIndex(function(c){ return c.id === id; });
   if (i >= 0) { chats[i].title = title; saveChats(chats); }
 }
- 
-function esc(s) {
-  return String(s)
-    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+
+function escHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
- 
+function esc(s) { return escHtml(s); }
+
 /* ── Render Chat List ── */
 function renderChatList() {
   var chats = getChats();
@@ -205,7 +289,7 @@ function renderChatList() {
     list.appendChild(btn);
   });
 }
- 
+
 /* ── Load / Rebuild Chat ── */
 function loadChat(id) {
   setActId(id);
@@ -216,45 +300,65 @@ function loadChat(id) {
   rebuildArea();
   closeMob();
 }
- 
+
 function rebuildArea() {
   var area = document.getElementById('chatArea');
   if (!area) return;
   area.innerHTML = '';
-  if (!currentMsgs.length) { renderWelcomeScreen(); return; }
+  // When switching chats: no welcome panel, just empty state or messages
+  if (!currentMsgs.length) { renderEmptyState(); return; }
   currentMsgs.forEach(function(m){ addMsgEl(m.html, m.role, false); });
 }
- 
+
 /* ── Add Message Element ── */
 function addMsgEl(html, role, animate) {
   if (animate === undefined) animate = true;
   var area = document.getElementById('chatArea');
   if (!area) return;
-  var ws = document.getElementById('welcomeScreen');
-  if (ws && ws.parentElement === area) area.removeChild(ws);
- 
-  var d    = document.createElement('div'); d.className = 'msg ' + role;
+
+  // If welcome panel is visible, fade it out first then append message
+  var panel = document.getElementById('welcomePanel');
+  if (panel) {
+    hideWelcomePanel(function() { _doAppend(area, html, role, animate); });
+    return;
+  }
+
+  // Remove empty state if present
+  var es = area.querySelector('.empty-state');
+  if (es) area.removeChild(es);
+
+  _doAppend(area, html, role, animate);
+}
+
+function _doAppend(area, html, role, animate) {
+  var d = document.createElement('div');
+  d.className = 'msg ' + role;
   if (!animate) d.style.animation = 'none';
-  var av   = document.createElement('div');
+
+  var av = document.createElement('div');
   av.className = 'msg-av ' + (role === 'bot' ? 'bot-av' : 'user-av');
   av.textContent = role === 'bot' ? '🤖' : '👤';
+
   var inner  = document.createElement('div'); inner.className = 'msg-inner';
   var bubble = document.createElement('div'); bubble.className = 'msg-bubble'; bubble.innerHTML = html;
   var time   = document.createElement('div'); time.className = 'msg-time';
   time.textContent = new Date().toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' });
-  inner.appendChild(bubble); inner.appendChild(time);
-  d.appendChild(av); d.appendChild(inner);
+
+  inner.appendChild(bubble);
+  inner.appendChild(time);
+  d.appendChild(av);
+  d.appendChild(inner);
   area.appendChild(d);
   area.scrollTop = area.scrollHeight;
 }
- 
+
 /* ── Send Message ── */
 function sendMessage() {
   var input = document.getElementById('userInput');
   if (!input) return;
   var text = input.value.trim();
   if (!text) return;
- 
+
   var actId = getActId();
   if (!actId || !getChatById(actId)) {
     actId = createChat(text.substring(0, 38) + (text.length > 38 ? '…' : ''));
@@ -263,14 +367,14 @@ function sendMessage() {
     saveTitle(actId, text.substring(0, 38) + (text.length > 38 ? '…' : ''));
     renderChatList();
   }
- 
+
   var uMsg = { role:'user', html: esc(text) };
   currentMsgs.push(uMsg);
   saveMsgs(actId, currentMsgs);
   addMsgEl(esc(text), 'user');
   input.value = '';
   input.style.height = 'auto';
- 
+
   showTyping();
   setTimeout(function() {
     removeTyping();
@@ -282,12 +386,13 @@ function sendMessage() {
     addMsgEl(html, 'bot');
   }, 600 + Math.random() * 600);
 }
- 
+
 function showTyping() {
   var area = document.getElementById('chatArea');
   if (!area) return;
-  var ws = document.getElementById('welcomeScreen');
-  if (ws && ws.parentElement === area) area.removeChild(ws);
+  // Remove empty state if present
+  var es = area.querySelector('.empty-state');
+  if (es) area.removeChild(es);
   var d    = document.createElement('div'); d.className = 'typing-indicator'; d.id = 'tEl';
   var av   = document.createElement('div'); av.className = 'msg-av bot-av'; av.textContent = '🤖';
   var dots = document.createElement('div'); dots.className = 'typing-dots';
@@ -297,29 +402,30 @@ function showTyping() {
   area.scrollTop = area.scrollHeight;
 }
 function removeTyping() { var t = document.getElementById('tEl'); if (t) t.remove(); }
- 
+
 function quickAsk(topic) {
+  closeQaMenu();
   var input = document.getElementById('userInput');
   if (input) { input.value = topic; sendMessage(); }
 }
- 
+
 function clearCurrentChat() {
   var actId = getActId();
   if (actId) saveMsgs(actId, []);
   currentMsgs = [];
-  var area = document.getElementById('chatArea');
-  if (area) { area.innerHTML = ''; renderWelcomeScreen(); }
+  // On clear: show empty state, NOT welcome panel
+  renderEmptyState();
 }
- 
+
 function autoResize(el) {
   el.style.height = 'auto';
   el.style.height = Math.min(el.scrollHeight, 100) + 'px';
 }
- 
+
 function handleKey(e) {
   if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
 }
- 
+
 /* ── Language ── */
 function setLang(l) {
   lang = l;
@@ -330,8 +436,8 @@ function setLang(l) {
   var input = document.getElementById('userInput');
   if (input) input.placeholder = l === 'en' ? 'Ask anything about admissions…' : 'ভর্তি সম্পর্কে যেকোনো প্রশ্ন করুন…';
 }
- 
-/* ── Sidebar Controls ── */
+
+/* ── Sidebar & Profile Events ── */
 function bindChatPageEvents() {
   var collapseBtn = document.getElementById('collapseBtn');
   if (collapseBtn) {
@@ -346,7 +452,7 @@ function bindChatPageEvents() {
       if (tipEl)   tipEl.textContent   = lbl;
     });
   }
- 
+
   var mobToggle = document.getElementById('mobToggle');
   if (mobToggle) {
     mobToggle.addEventListener('click', function() {
@@ -356,22 +462,21 @@ function bindChatPageEvents() {
       if (ov) ov.classList.add('show');
     });
   }
- 
+
   var sbOverlay = document.getElementById('sbOverlay');
   if (sbOverlay) sbOverlay.addEventListener('click', closeMob);
- 
+
   var newChatBtn = document.getElementById('newChatBtn');
   if (newChatBtn) {
     newChatBtn.addEventListener('click', function() {
       createChat('New Chat');
       currentMsgs = [];
       renderChatList();
-      var area = document.getElementById('chatArea');
-      if (area) { area.innerHTML = ''; renderWelcomeScreen(); }
+      renderEmptyState(); // New chat → empty state, NOT welcome panel
       closeMob();
     });
   }
- 
+
   var profileBtn = document.getElementById('profileBtn');
   var pdrop      = document.getElementById('pdrop');
   if (profileBtn && pdrop) {
@@ -382,7 +487,7 @@ function bindChatPageEvents() {
     pdrop.addEventListener('click', function(e){ e.stopPropagation(); });
     document.addEventListener('click', function(){ pdrop.classList.remove('open'); });
   }
- 
+
   var ddLang = document.getElementById('ddLang');
   if (ddLang) {
     ddLang.addEventListener('click', function() {
@@ -391,29 +496,30 @@ function bindChatPageEvents() {
       toast(newLang === 'en' ? 'Switched to English' : 'বাংলায় পরিবর্তিত', 'ok');
     });
   }
- 
+
   var ddLogout = document.getElementById('ddLogout');
   if (ddLogout) {
     ddLogout.addEventListener('click', function() {
       clearAuth();
       store.del(VK);
+      store.del(WK); // Reset welcome flag on logout so it shows again next login
       currentMsgs = [];
       toast('Logged out.');
       setTimeout(function(){ window.location.href = 'login.html'; }, 700);
     });
   }
 }
- 
+
 function closeMob() {
   var sb = document.getElementById('sidebar');
   var ov = document.getElementById('sbOverlay');
   if (sb) sb.classList.remove('mob-open');
   if (ov) ov.classList.remove('show');
 }
- 
-/* ══════════════════════════════════════════════════════
+
+/* ══════════════════════════════════════
    KNOWLEDGE BASE
-══════════════════════════════════════════════════════ */
+══════════════════════════════════════ */
 var KB = {
   greeting: {
     keywords: ['hello','hi','hey','salam','greetings','হ্যালো','হাই'],
@@ -470,35 +576,32 @@ var KB = {
     bn: function(q){ return '"<em>' + q + '</em>" বুঝতে পারিনি। 🤔<br>উপরের বিষয়গুলো সম্পর্কে জিজ্ঞেস করুন।'; }
   }
 };
- 
-/* ── NLP ── */
+
+/* ══════════════════════════════════════
+   NLP
+══════════════════════════════════════ */
 function lev(a, b) {
-  var dp = [];
-  for (var i = 0; i <= a.length; i++) {
+  var dp = [], i, j;
+  for (i = 0; i <= a.length; i++) {
     dp[i] = [];
-    for (var j = 0; j <= b.length; j++) {
-      dp[i][j] = i === 0 ? j : j === 0 ? i : 0;
-    }
+    for (j = 0; j <= b.length; j++) dp[i][j] = i === 0 ? j : j === 0 ? i : 0;
   }
-  for (var i = 1; i <= a.length; i++)
-    for (var j = 1; j <= b.length; j++)
+  for (i = 1; i <= a.length; i++)
+    for (j = 1; j <= b.length; j++)
       dp[i][j] = a[i-1] === b[j-1] ? dp[i-1][j-1] : 1 + Math.min(dp[i-1][j], dp[i][j-1], dp[i-1][j-1]);
   return dp[a.length][b.length];
 }
- 
 function fuzzy(w, k) {
   if (k.indexOf(w) !== -1 || w.indexOf(k) !== -1) return true;
   return lev(w.toLowerCase(), k.toLowerCase()) <= Math.max(1, Math.floor(k.length * 0.3));
 }
- 
 function classify(input) {
   var lower = input.toLowerCase().trim();
   var words = lower.split(/\s+/);
   var best = null, score = 0;
   for (var intent in KB) {
     if (intent === 'fallback') continue;
-    var data = KB[intent];
-    var s = 0;
+    var data = KB[intent], s = 0;
     for (var ki = 0; ki < data.keywords.length; ki++) {
       var kw = data.keywords[ki];
       if (lower.indexOf(kw) !== -1) { s += kw.split(' ').length * 2; continue; }

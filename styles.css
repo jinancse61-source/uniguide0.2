@@ -1,6 +1,3 @@
-
-Copy
-
 /* ════════════════════════════════════════
    UNIGUIDE — style.css
    All styling for login.html & index.html
@@ -952,4 +949,285 @@ body.chat-page {
   .llogo { width: 52px; height: 52px; font-size: 22px; }
   .msg, .msg.user { max-width: 95%; }
   .topbar-title { font-size: .92rem; }
+}
+
+/* ════════════════════════════════════════════
+   PART 1 — WELCOME PANEL
+   Shows only once per session after login
+════════════════════════════════════════════ */
+
+/* Existing .welcome-screen stays for backward compat,
+   but the new panel uses .welcome-panel */
+.welcome-panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 48px 24px;
+  text-align: center;
+  animation: wpIn .45s cubic-bezier(.22,1,.36,1) both;
+}
+@keyframes wpIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0);    }
+}
+.welcome-panel.wp-fade-out {
+  animation: wpOut .34s ease forwards;
+}
+@keyframes wpOut {
+  from { opacity: 1; transform: translateY(0);    }
+  to   { opacity: 0; transform: translateY(-14px); }
+}
+
+/* Avatar circle showing first letter of user name */
+.wp-avatar {
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--gold), var(--gold-light));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Playfair Display', serif;
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--navy);
+  box-shadow: 0 8px 28px rgba(201,168,76,.35), 0 2px 8px rgba(201,168,76,.2);
+  flex-shrink: 0;
+  margin-bottom: 4px;
+}
+
+/* "Hello, [Name]" heading */
+.wp-greeting {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.65rem;
+  font-weight: 700;
+  color: var(--text-dark);
+  line-height: 1.2;
+}
+.wp-greeting span {
+  color: var(--gold);
+}
+
+/* Decorative gold divider line */
+.wp-rule {
+  width: 44px;
+  height: 3px;
+  border-radius: 3px;
+  background: linear-gradient(90deg, var(--gold), var(--gold-light));
+  margin: 0 auto;
+}
+
+/* Subtitle */
+.wp-subtitle {
+  font-size: .92rem;
+  color: var(--text-light);
+  line-height: 1.6;
+  max-width: 310px;
+}
+.wp-subtitle strong {
+  color: var(--text-mid);
+  font-weight: 600;
+}
+
+/* Suggestion chips row */
+.wp-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  max-width: 440px;
+  margin-top: 4px;
+}
+
+.wp-chip {
+  padding: 7px 16px;
+  background: var(--white);
+  border: 1px solid rgba(201,168,76,.28);
+  border-radius: 22px;
+  font-size: .75rem;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 500;
+  color: var(--text-mid);
+  cursor: pointer;
+  transition: background .18s, border-color .18s, color .18s, transform .18s, box-shadow .18s;
+  box-shadow: 0 1px 4px rgba(0,0,0,.05);
+}
+.wp-chip:hover {
+  background: rgba(201,168,76,.1);
+  border-color: var(--gold);
+  color: var(--text-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 14px rgba(201,168,76,.18);
+}
+.wp-chip:active {
+  transform: translateY(0);
+}
+
+/* Empty state for new / switched chats (no welcome panel) */
+.empty-state {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 40px 20px;
+  text-align: center;
+}
+.empty-state-icon {
+  width: 56px;
+  height: 56px;
+  background: linear-gradient(135deg, var(--navy-mid), var(--navy-light));
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  box-shadow: 0 6px 18px rgba(13,27,42,.12);
+}
+.empty-state p {
+  font-size: .82rem;
+  color: var(--text-light);
+  line-height: 1.6;
+  max-width: 260px;
+}
+
+
+/* ════════════════════════════════════════════
+   PART 2 — QUICK ACTIONS MENU
+   Modern grid-dot icon + popup in input area
+════════════════════════════════════════════ */
+
+/* Wrapper keeps the button + popup together */
+.qa-wrap {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  flex-shrink: 0;
+}
+
+/* The icon button */
+.qa-btn {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  border: 1px solid rgba(13,27,42,.12);
+  background: rgba(13,27,42,.04);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-mid);
+  transition: background .18s, border-color .18s, color .18s, transform .2s;
+  flex-shrink: 0;
+  position: relative;
+}
+.qa-btn:hover {
+  background: rgba(201,168,76,.1);
+  border-color: rgba(201,168,76,.4);
+  color: var(--gold);
+  transform: rotate(30deg);
+}
+.qa-btn.qa-active {
+  background: rgba(201,168,76,.14);
+  border-color: var(--gold);
+  color: var(--gold);
+  transform: rotate(45deg);
+}
+
+/* Native title tooltip is used — no pseudo-element needed */
+
+/* The popup panel */
+.qa-menu {
+  position: absolute;
+  bottom: calc(100% + 10px);
+  left: 0;
+  width: 204px;
+  background: var(--white);
+  border: 1px solid rgba(13,27,42,.1);
+  border-radius: 14px;
+  box-shadow: 0 10px 36px rgba(13,27,42,.13), 0 2px 8px rgba(13,27,42,.06);
+  overflow: hidden;
+  z-index: 500;
+
+  /* Hidden state */
+  opacity: 0;
+  pointer-events: none;
+  transform-origin: bottom left;
+  transform: scale(.93) translateY(8px);
+  transition: opacity .2s ease, transform .22s cubic-bezier(.34,1.56,.64,1);
+}
+.qa-menu.qa-open {
+  opacity: 1;
+  pointer-events: all;
+  transform: scale(1) translateY(0);
+}
+
+.qa-menu-header {
+  padding: 10px 14px 8px;
+  font-size: .62rem;
+  font-weight: 700;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+  color: var(--text-light);
+  border-bottom: 1px solid rgba(13,27,42,.07);
+  background: rgba(13,27,42,.02);
+}
+
+/* Each menu item */
+.qa-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 14px;
+  border: none;
+  background: transparent;
+  font-family: 'DM Sans', sans-serif;
+  font-size: .83rem;
+  font-weight: 500;
+  color: var(--text-dark);
+  cursor: pointer;
+  text-align: left;
+  transition: background .14s, color .14s, padding-left .14s;
+}
+.qa-item:hover {
+  background: linear-gradient(90deg, rgba(201,168,76,.09), rgba(201,168,76,.03));
+  color: var(--navy);
+  padding-left: 18px;
+}
+.qa-item:not(:last-child) {
+  border-bottom: 1px solid rgba(13,27,42,.04);
+}
+
+/* Emoji icon inside each item */
+.qa-ico {
+  font-size: 15px;
+  width: 26px;
+  height: 26px;
+  border-radius: 7px;
+  background: rgba(13,27,42,.05);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: background .14s;
+}
+.qa-item:hover .qa-ico {
+  background: rgba(201,168,76,.18);
+}
+
+/* On mobile: open popup upward and align to right edge */
+@media (max-width: 480px) {
+  .qa-menu {
+    left: auto;
+    right: 0;
+    transform-origin: bottom right;
+    width: 190px;
+  }
+  .wp-greeting { font-size: 1.35rem; }
+  .wp-avatar   { width: 62px; height: 62px; font-size: 1.6rem; }
 }

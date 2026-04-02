@@ -11,7 +11,6 @@
  
   <!-- ══════════ SIDEBAR ══════════ -->
   <aside class="sidebar" id="sidebar">
- 
     <div class="sb-top">
       <button class="sb-btn has-tip" id="collapseBtn">
         <span class="sb-icon">☰</span>
@@ -24,14 +23,12 @@
         <span class="tip">New chat</span>
       </button>
     </div>
- 
     <div class="sb-mid" id="sbMid">
       <div class="sb-sec-lbl">Recent</div>
       <div id="chatList">
-        <div class="sb-empty" id="emptyMsg">No chats yet.<br>Start a new conversation!</div>
+        <div class="sb-empty">No chats yet.<br>Start a new conversation!</div>
       </div>
     </div>
- 
     <div class="sb-bot">
       <button class="profile-btn has-tip" id="profileBtn">
         <div class="avatar" id="sbAvatar">U</div>
@@ -41,9 +38,8 @@
         </div>
         <span class="tip">Profile</span>
       </button>
- 
       <div class="pdrop" id="pdrop">
-        <div class="dd-email" id="ddEmail"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="a2d7d1c7d0e2c7dac3cfd2cec78cc1cdcf">[email&#160;protected]</a></div>
+        <div class="dd-email" id="ddEmail">user@example.com</div>
         <div class="dd-div"></div>
         <button class="dd-item"><span class="dd-ico">⚙️</span>Settings</button>
         <button class="dd-item" id="ddLang"><span class="dd-ico">🌐</span>Language</button>
@@ -54,7 +50,6 @@
     </div>
   </aside>
  
-  <!-- Mobile overlay -->
   <div class="sb-overlay" id="sbOverlay"></div>
  
   <!-- ══════════ MAIN ══════════ -->
@@ -67,13 +62,11 @@
         <div class="topbar-badge">🎓</div>
         <div>
           <span class="topbar-title"><span>Uni</span>guide</span>
-          <span class="topbar-sub">&middot; State University of Bangladesh</span>
+          <span class="topbar-sub">&middot; <br>State University of Bangladesh</span>
         </div>
       </div>
       <div class="topbar-right">
-        <div class="status-pill">
-          <div class="status-dot"></div>Available 24/7
-        </div>
+        <div class="status-pill"><div class="status-dot"></div>Available 24/7</div>
         <div class="lang-toggle">
           <button class="lang-btn active" id="btn-en" onclick="setLang('en')">EN</button>
           <button class="lang-btn" id="btn-bn" onclick="setLang('bn')">বাং</button>
@@ -81,14 +74,44 @@
       </div>
     </div>
  
-    <!-- Chat Area -->
-    <div class="chat-area" id="chatArea">
-      <!-- Welcome screen injected by JS -->
-    </div>
+    <!-- Chat Area — JS injects content here -->
+    <div class="chat-area" id="chatArea"></div>
  
-    <!-- Input -->
+    <!-- ══════════ INPUT AREA ══════════ -->
     <div class="input-wrap-outer">
       <div class="input-row">
+ 
+        <!-- PART 2: Quick Actions button + popup -->
+        <div class="qa-wrap">
+ 
+          <!-- Icon button: grid of 9 dots (modern "more" icon) -->
+          <button class="qa-btn" id="qaBtn" aria-label="Quick actions" title="Quick actions">
+            <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" width="18" height="18">
+              <circle cx="4.5"  cy="4.5"  r="1.7" fill="currentColor"/>
+              <circle cx="10"   cy="4.5"  r="1.7" fill="currentColor"/>
+              <circle cx="15.5" cy="4.5"  r="1.7" fill="currentColor"/>
+              <circle cx="4.5"  cy="10"   r="1.7" fill="currentColor"/>
+              <circle cx="10"   cy="10"   r="1.7" fill="currentColor"/>
+              <circle cx="15.5" cy="10"   r="1.7" fill="currentColor"/>
+              <circle cx="4.5"  cy="15.5" r="1.7" fill="currentColor"/>
+              <circle cx="10"   cy="15.5" r="1.7" fill="currentColor"/>
+              <circle cx="15.5" cy="15.5" r="1.7" fill="currentColor"/>
+            </svg>
+          </button>
+ 
+          <!-- Quick Actions Popup Menu -->
+          <div class="qa-menu" id="qaMenu" role="menu">
+            <div class="qa-menu-header">Quick Topics</div>
+            <button class="qa-item" role="menuitem"><span class="qa-ico">📋</span>Requirements</button>
+            <button class="qa-item" role="menuitem"><span class="qa-ico">📊</span>GPA</button>
+            <button class="qa-item" role="menuitem"><span class="qa-ico">💰</span>Fees</button>
+            <button class="qa-item" role="menuitem"><span class="qa-ico">🏆</span>Scholarships</button>
+            <button class="qa-item" role="menuitem"><span class="qa-ico">📅</span>Deadline</button>
+            <button class="qa-item" role="menuitem"><span class="qa-ico">✍️</span>How to Apply</button>
+            <button class="qa-item" role="menuitem"><span class="qa-ico">📞</span>Contacts</button>
+          </div>
+        </div>
+ 
         <textarea
           id="userInput"
           rows="1"
@@ -98,12 +121,12 @@
         ></textarea>
         <button class="ibtn clear-btn" onclick="clearCurrentChat()" title="Clear chat">🗑️</button>
         <button class="ibtn send-btn" onclick="sendMessage()" title="Send">➤</button>
-
       </div>
     </div>
-    </div>
-    </main>
-    <div class="toast" id="toast"></div>
+ 
+  </main>
+ 
+  <div class="toast" id="toast"></div>
   <script src="script.js"></script>
-    </body>
-    </html>
+</body>
+</html>
