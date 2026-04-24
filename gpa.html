@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Uniguide – GPA Requirements</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --navy: #0d1b2a; --navy-mid: #132338; --navy-light: #1c3352;
+      --gold: #c9a84c; --gold-light: #e8c87a;
+      --white: #ffffff; --cream-bg: #f7f3ec; --cream-dark: #ede6d8;
+      --text-dark: #1a1a2e; --text-mid: #3d4f6b; --text-light: #7a8fa8;
+      --green: #2ecc71; --red: #e74c3c;
+      --radius: 14px; --radius-sm: 8px; --t: .24s cubic-bezier(.4,0,.2,1);
+    }
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'DM Sans', sans-serif; background: var(--cream-bg); min-height: 100vh; color: var(--text-dark); }
+
+    .topnav { background: var(--navy); padding: 0 32px; height: 58px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(201,168,76,.15); position: sticky; top: 0; z-index: 100; }
+    .nav-left { display: flex; align-items: center; gap: 16px; }
+    .back-btn { display: flex; align-items: center; gap: 7px; color: var(--text-light); text-decoration: none; font-size: .8rem; font-weight: 500; padding: 6px 12px; border-radius: var(--radius-sm); transition: background var(--t), color var(--t); }
+    .back-btn:hover { background: rgba(255,255,255,.07); color: var(--gold-light); }
+    .nav-brand { font-family: 'Playfair Display', serif; font-size: 1.1rem; color: var(--white); }
+    .nav-brand span { color: var(--gold); }
+    .lang-toggle { display: flex; gap: 4px; background: rgba(255,255,255,.06); border-radius: 8px; padding: 3px; }
+    .lang-btn { padding: 5px 12px; border: none; border-radius: 6px; font-family: 'DM Sans', sans-serif; font-size: .75rem; font-weight: 600; cursor: pointer; background: transparent; color: var(--text-light); transition: all var(--t); }
+    .lang-btn.active { background: var(--gold); color: var(--navy); }
+
+    .hero { background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%); padding: 52px 32px 44px; text-align: center; position: relative; overflow: hidden; }
+    .hero::before { content: ''; position: absolute; inset: 0; background-image: linear-gradient(rgba(201,168,76,.05) 1px, transparent 1px), linear-gradient(90deg, rgba(201,168,76,.05) 1px, transparent 1px); background-size: 40px 40px; }
+    .hero-icon { width: 72px; height: 72px; background: linear-gradient(135deg, var(--gold), var(--gold-light)); border-radius: 20px; display: flex; align-items: center; justify-content: center; font-size: 32px; margin: 0 auto 18px; box-shadow: 0 12px 32px rgba(201,168,76,.4); position: relative; z-index: 1; }
+    .hero h1 { font-family: 'Playfair Display', serif; font-size: 2rem; font-weight: 700; color: var(--white); position: relative; z-index: 1; }
+    .hero h1 span { color: var(--gold); }
+    .hero-sub { color: var(--text-light); font-size: .88rem; margin-top: 8px; position: relative; z-index: 1; font-weight: 300; }
+    .hero-rule { width: 44px; height: 3px; background: linear-gradient(90deg, var(--gold), var(--gold-light)); border-radius: 3px; margin: 14px auto 0; position: relative; z-index: 1; }
+
+    .content { max-width: 820px; margin: 0 auto; padding: 40px 24px 60px; }
+
+    .section-card { background: var(--white); border-radius: var(--radius); border: 1px solid rgba(201,168,76,.15); overflow: hidden; margin-bottom: 24px; box-shadow: 0 2px 16px rgba(13,27,42,.06); animation: fadeUp .4s ease both; }
+    .section-card:nth-child(2) { animation-delay: .05s; }
+    .section-card:nth-child(3) { animation-delay: .10s; }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
+
+    .card-header { background: linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 100%); padding: 18px 24px; display: flex; align-items: center; gap: 14px; }
+    .card-header-icon { width: 38px; height: 38px; background: rgba(201,168,76,.18); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+    .card-header h2 { font-family: 'Playfair Display', serif; font-size: 1.05rem; color: var(--white); font-weight: 600; }
+    .card-header p { font-size: .76rem; color: var(--text-light); margin-top: 2px; font-weight: 300; }
+    .card-body { padding: 24px; }
+
+    /* GPA Meter Visual */
+    .gpa-table { width: 100%; border-collapse: collapse; }
+    .gpa-table thead tr { background: rgba(13,27,42,.04); }
+    .gpa-table th { padding: 10px 14px; text-align: left; font-size: .72rem; font-weight: 700; color: var(--text-light); text-transform: uppercase; letter-spacing: .06em; border-bottom: 2px solid rgba(201,168,76,.15); }
+    .gpa-table td { padding: 12px 14px; border-bottom: 1px solid rgba(13,27,42,.05); font-size: .85rem; vertical-align: middle; }
+    .gpa-table tr:hover td { background: rgba(201,168,76,.04); }
+    .gpa-table tr:last-child td { border-bottom: none; }
+
+    .dept-badge { font-weight: 600; color: var(--text-dark); }
+    .gpa-val { font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 700; color: var(--gold); }
+
+    .bar-wrap { width: 100%; height: 8px; background: var(--cream-dark); border-radius: 4px; overflow: hidden; min-width: 80px; }
+    .bar-fill { height: 100%; background: linear-gradient(90deg, var(--gold), var(--gold-light)); border-radius: 4px; transition: width .6s cubic-bezier(.4,0,.2,1); }
+
+    .note-badge { display: inline-block; padding: 2px 9px; background: rgba(201,168,76,.1); border-radius: 20px; font-size: .68rem; font-weight: 500; color: var(--gold); }
+
+    /* Scale Reference */
+    .scale-row { display: flex; align-items: center; justify-content: space-between; padding: 4px 0; }
+    .scale-label { font-size: .75rem; color: var(--text-light); }
+    .scale-line { flex: 1; height: 1px; background: var(--cream-dark); margin: 0 10px; }
+    .scale-val { font-size: .75rem; font-weight: 600; color: var(--gold); font-family: 'Playfair Display', serif; }
+
+    .notice { display: flex; align-items: flex-start; gap: 12px; background: rgba(201,168,76,.08); border: 1px solid rgba(201,168,76,.25); border-radius: var(--radius-sm); padding: 14px 16px; margin-top: 20px; }
+    .notice-icon { font-size: 18px; flex-shrink: 0; }
+    .notice-text { font-size: .82rem; color: var(--text-mid); line-height: 1.55; }
+    .notice-text strong { color: var(--text-dark); }
+
+    /* Calc box */
+    .calc-box { background: var(--cream-bg); border-radius: var(--radius-sm); padding: 20px; border: 1px solid rgba(201,168,76,.15); }
+    .calc-row { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+    .calc-row:last-child { margin-bottom: 0; }
+    .calc-label { font-size: .8rem; color: var(--text-mid); font-weight: 500; min-width: 90px; }
+    .calc-input { flex: 1; padding: 9px 13px; border: 1px solid rgba(13,27,42,.12); border-radius: var(--radius-sm); font-family: 'DM Sans', sans-serif; font-size: .88rem; background: var(--white); color: var(--text-dark); outline: none; transition: border-color var(--t); }
+    .calc-input:focus { border-color: var(--gold); }
+    .calc-result { margin-top: 16px; padding: 14px 18px; background: var(--navy); border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: space-between; }
+    .calc-result-label { font-size: .8rem; color: var(--text-light); }
+    .calc-result-val { font-family: 'Playfair Display', serif; font-size: 1.4rem; font-weight: 700; color: var(--gold); }
+    .calc-btn { width: 100%; margin-top: 12px; padding: 11px; background: linear-gradient(135deg, var(--gold), var(--gold-light)); border: none; border-radius: var(--radius-sm); font-family: 'DM Sans', sans-serif; font-size: .85rem; font-weight: 600; color: var(--navy); cursor: pointer; transition: transform var(--t), box-shadow var(--t); }
+    .calc-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(201,168,76,.35); }
+    .status-msg { margin-top: 10px; padding: 8px 14px; border-radius: var(--radius-sm); font-size: .8rem; font-weight: 500; display: none; }
+    .status-msg.ok { background: rgba(46,204,113,.1); color: #27ae60; border: 1px solid rgba(46,204,113,.2); display: block; }
+    .status-msg.bad { background: rgba(231,76,60,.1); color: var(--red); border: 1px solid rgba(231,76,60,.2); display: block; }
+
+    .fab { position: fixed; bottom: 28px; right: 28px; background: linear-gradient(135deg, var(--gold), var(--gold-light)); color: var(--navy); border: none; border-radius: 50px; padding: 12px 22px; font-family: 'DM Sans', sans-serif; font-size: .83rem; font-weight: 600; cursor: pointer; box-shadow: 0 8px 24px rgba(201,168,76,.4); display: flex; align-items: center; gap: 8px; text-decoration: none; transition: transform var(--t), box-shadow var(--t); z-index: 50; }
+    .fab:hover { transform: translateY(-3px); box-shadow: 0 14px 32px rgba(201,168,76,.5); }
+
+    @media (max-width: 640px) {
+      .hero { padding: 36px 20px 32px; }
+      .hero h1 { font-size: 1.55rem; }
+      .content { padding: 24px 16px 80px; }
+      .bar-wrap { display: none; }
+      .calc-row { flex-direction: column; align-items: flex-start; }
+      .calc-input { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="topnav">
+    <div class="nav-left">
+      <a class="back-btn" href="index.html">← <span data-en="Back to Chat" data-bn="চ্যাটে ফিরুন">Back to Chat</span></a>
+      <div class="nav-brand"><span>Uni</span>guide</div>
+    </div>
+    <div class="lang-toggle">
+      <button class="lang-btn active" id="btn-en" onclick="setLang('en')">EN</button>
+      <button class="lang-btn" id="btn-bn" onclick="setLang('bn')">বাং</button>
+    </div>
+  </nav>
+
+  <div class="hero">
+    <div class="hero-icon">📊</div>
+    <h1 data-en="GPA <span>Requirements</span>" data-bn="জিপিএ <span>প্রয়োজনীয়তা</span>">GPA <span>Requirements</span></h1>
+    <p class="hero-sub" data-en="Department-wise GPA criteria for SSC + HSC combined" data-bn="SSC ও HSC মিলিয়ে বিভাগ অনুযায়ী GPA মানদণ্ড">Department-wise GPA criteria for SSC + HSC combined</p>
+    <div class="hero-rule"></div>
+  </div>
+
+  <div class="content">
+
+    <!-- GPA Table -->
+    <div class="section-card">
+      <div class="card-header">
+        <div class="card-header-icon">🏫</div>
+        <div>
+          <h2 data-en="Department GPA Chart" data-bn="বিভাগ অনুযায়ী GPA তালিকা">Department GPA Chart</h2>
+          <p data-en="Combined SSC + HSC GPA (out of 10.00)" data-bn="SSC ও HSC মিলিয়ে GPA (১০.০০-এর মধ্যে)">Combined SSC + HSC GPA (out of 10.00)</p>
+        </div>
+      </div>
+      <div class="card-body">
+        <table class="gpa-table">
+          <thead>
+            <tr>
+              <th data-en="Department" data-bn="বিভাগ">Department</th>
+              <th data-en="Min. GPA" data-bn="ন্যূনতম GPA">Min. GPA</th>
+              <th data-en="Progress" data-bn="অগ্রগতি">Progress</th>
+              <th data-en="Note" data-bn="মন্তব্য">Note</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="dept-badge">CSE</span></td>
+              <td><span class="gpa-val">7.00</span></td>
+              <td><div class="bar-wrap"><div class="bar-fill" style="width:70%"></div></div></td>
+              <td><span class="note-badge" data-en="Science req." data-bn="বিজ্ঞান আবশ্যক">Science req.</span></td>
+            </tr>
+            <tr>
+              <td><span class="dept-badge">EEE</span></td>
+              <td><span class="gpa-val">7.00</span></td>
+              <td><div class="bar-wrap"><div class="bar-fill" style="width:70%"></div></div></td>
+              <td><span class="note-badge" data-en="Physics & Math" data-bn="পদার্থ ও গণিত">Physics & Math</span></td>
+            </tr>
+            <tr>
+              <td><span class="dept-badge" data-en="Architecture" data-bn="স্থাপত্য">Architecture</span></td>
+              <td><span class="gpa-val">7.50</span></td>
+              <td><div class="bar-wrap"><div class="bar-fill" style="width:75%"></div></div></td>
+              <td><span class="note-badge" data-en="Portfolio needed" data-bn="পোর্টফোলিও লাগবে">Portfolio needed</span></td>
+            </tr>
+            <tr>
+              <td><span class="dept-badge">BBA</span></td>
+              <td><span class="gpa-val">6.50</span></td>
+              <td><div class="bar-wrap"><div class="bar-fill" style="width:65%"></div></div></td>
+              <td><span class="note-badge" data-en="Any group" data-bn="যেকোনো গ্রুপ">Any group</span></td>
+            </tr>
+            <tr>
+              <td><span class="dept-badge">MBA</span></td>
+              <td><span class="gpa-val">6.50</span></td>
+              <td><div class="bar-wrap"><div class="bar-fill" style="width:65%"></div></div></td>
+              <td><span class="note-badge" data-en="Grad. degree req." data-bn="গ্র্যাজুয়েশন আবশ্যক">Grad. degree req.</span></td>
+            </tr>
+            <tr>
+              <td><span class="dept-badge">Law / LLB</span></td>
+              <td><span class="gpa-val">6.50</span></td>
+              <td><div class="bar-wrap"><div class="bar-fill" style="width:65%"></div></div></td>
+              <td><span class="note-badge" data-en="Written test" data-bn="লিখিত পরীক্ষা">Written test</span></td>
+            </tr>
+            <tr>
+              <td><span class="dept-badge" data-en="English / Arts" data-bn="ইংরেজি / আর্টস">English / Arts</span></td>
+              <td><span class="gpa-val">6.00</span></td>
+              <td><div class="bar-wrap"><div class="bar-fill" style="width:60%"></div></div></td>
+              <td><span class="note-badge" data-en="Any group" data-bn="যেকোনো গ্রুপ">Any group</span></td>
+            </tr>
+            <tr>
+              <td><span class="dept-badge" data-en="Social Science" data-bn="সামাজিক বিজ্ঞান">Social Science</span></td>
+              <td><span class="gpa-val">6.00</span></td>
+              <td><div class="bar-wrap"><div class="bar-fill" style="width:60%"></div></div></td>
+              <td><span class="note-badge" data-en="Any group" data-bn="যেকোনো গ্রুপ">Any group</span></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="notice" style="margin-top:20px;">
+          <div class="notice-icon">⚠️</div>
+          <div class="notice-text" data-en="<strong>Individual GPA:</strong> For CSE/EEE, a minimum of 3.00 in both SSC and HSC separately is required, regardless of the combined score." data-bn="<strong>আলাদা GPA:</strong> CSE/EEE-এর জন্য SSC ও HSC উভয়ে আলাদাভাবে ন্যূনতম ৩.০০ প্রয়োজন, মিলিত স্কোর যাই হোক না কেন।"><strong>Individual GPA:</strong> For CSE/EEE, a minimum of 3.00 in both SSC and HSC separately is required, regardless of the combined score.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- GPA Calculator -->
+    <div class="section-card">
+      <div class="card-header">
+        <div class="card-header-icon">🧮</div>
+        <div>
+          <h2 data-en="GPA Eligibility Calculator" data-bn="GPA যোগ্যতা ক্যালকুলেটর">GPA Eligibility Calculator</h2>
+          <p data-en="Check which departments you qualify for" data-bn="আপনি কোন বিভাগের জন্য যোগ্য তা পরীক্ষা করুন">Check which departments you qualify for</p>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="calc-box">
+          <div class="calc-row">
+            <label class="calc-label" data-en="SSC GPA" data-bn="SSC GPA">SSC GPA</label>
+            <input class="calc-input" type="number" id="sscGpa" placeholder="e.g. 4.50" min="1" max="5" step="0.01" />
+          </div>
+          <div class="calc-row">
+            <label class="calc-label" data-en="HSC GPA" data-bn="HSC GPA">HSC GPA</label>
+            <input class="calc-input" type="number" id="hscGpa" placeholder="e.g. 4.50" min="1" max="5" step="0.01" />
+          </div>
+          <button class="calc-btn" onclick="calcGpa()" data-en="Check Eligibility →" data-bn="যোগ্যতা যাচাই করুন →">Check Eligibility →</button>
+          <div class="calc-result" id="calcResult" style="display:none">
+            <span class="calc-result-label" data-en="Combined GPA" data-bn="মিলিত GPA">Combined GPA</span>
+            <span class="calc-result-val" id="calcVal">0.00</span>
+          </div>
+          <div class="status-msg" id="statusMsg"></div>
+          <div id="eligibleDepts" style="margin-top:14px;"></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <a class="fab" href="index.html">💬 <span data-en="Ask in Chat" data-bn="চ্যাটে জিজ্ঞেস করুন">Ask in Chat</span></a>
+
+  <script>
+    var lang = localStorage.getItem('ug_lang') || 'en';
+    function setLang(l) {
+      lang = l;
+      localStorage.setItem('ug_lang', l);
+      document.getElementById('btn-en').classList.toggle('active', l === 'en');
+      document.getElementById('btn-bn').classList.toggle('active', l === 'bn');
+      document.querySelectorAll('[data-en]').forEach(function(el) {
+        var val = el.getAttribute('data-' + l);
+        if (val) el.innerHTML = val;
+      });
+    }
+    setLang(lang);
+
+    var depts = [
+      { name: 'CSE / EEE', name_bn: 'CSE / EEE', min: 7.00 },
+      { name: 'Architecture', name_bn: 'স্থাপত্য', min: 7.50 },
+      { name: 'BBA / MBA', name_bn: 'BBA / MBA', min: 6.50 },
+      { name: 'Law / LLB', name_bn: 'আইন / LLB', min: 6.50 },
+      { name: 'English / Arts', name_bn: 'ইংরেজি / আর্টস', min: 6.00 },
+      { name: 'Social Science', name_bn: 'সামাজিক বিজ্ঞান', min: 6.00 },
+    ];
+
+    function calcGpa() {
+      var ssc = parseFloat(document.getElementById('sscGpa').value);
+      var hsc = parseFloat(document.getElementById('hscGpa').value);
+      if (isNaN(ssc) || isNaN(hsc) || ssc < 1 || ssc > 5 || hsc < 1 || hsc > 5) {
+        var msg = document.getElementById('statusMsg');
+        msg.textContent = lang === 'en' ? '⚠️ Please enter valid GPA values between 1.00 and 5.00.' : '⚠️ ১.০০ থেকে ৫.০০-এর মধ্যে বৈধ GPA মান দিন।';
+        msg.className = 'status-msg bad';
+        document.getElementById('calcResult').style.display = 'none';
+        document.getElementById('eligibleDepts').innerHTML = '';
+        return;
+      }
+      var combined = ssc + hsc;
+      document.getElementById('calcVal').textContent = combined.toFixed(2);
+      document.getElementById('calcResult').style.display = 'flex';
+
+      var eligible = depts.filter(function(d) { return combined >= d.min; });
+      var msg = document.getElementById('statusMsg');
+      if (eligible.length === 0) {
+        msg.textContent = lang === 'en' ? '❌ You do not meet the minimum GPA for any department. Combined must be at least 6.00.' : '❌ আপনি কোনো বিভাগের ন্যূনতম GPA পূরণ করেননি। মিলিত GPA কমপক্ষে ৬.০০ হতে হবে।';
+        msg.className = 'status-msg bad';
+        document.getElementById('eligibleDepts').innerHTML = '';
+      } else {
+        msg.textContent = lang === 'en' ? '✅ You are eligible for ' + eligible.length + ' department(s):' : '✅ আপনি ' + eligible.length + 'টি বিভাগের জন্য যোগ্য:';
+        msg.className = 'status-msg ok';
+        var html = '<div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:4px;">';
+        eligible.forEach(function(d) {
+          html += '<span style="padding:5px 12px;background:rgba(46,204,113,.1);border:1px solid rgba(46,204,113,.25);border-radius:20px;font-size:.78rem;font-weight:600;color:#27ae60;">' + (lang === 'bn' ? d.name_bn : d.name) + '</span>';
+        });
+        html += '</div>';
+        document.getElementById('eligibleDepts').innerHTML = html;
+      }
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Uniguide – Tuition Fees</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --navy: #0d1b2a; --navy-mid: #132338; --navy-light: #1c3352;
+      --gold: #c9a84c; --gold-light: #e8c87a;
+      --white: #ffffff; --cream-bg: #f7f3ec; --cream-dark: #ede6d8;
+      --text-dark: #1a1a2e; --text-mid: #3d4f6b; --text-light: #7a8fa8;
+      --green: #2ecc71; --red: #e74c3c;
+      --radius: 14px; --radius-sm: 8px; --t: .24s cubic-bezier(.4,0,.2,1);
+    }
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'DM Sans', sans-serif; background: var(--cream-bg); min-height: 100vh; color: var(--text-dark); }
+
+    .topnav { background: var(--navy); padding: 0 32px; height: 58px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(201,168,76,.15); position: sticky; top: 0; z-index: 100; }
+    .nav-left { display: flex; align-items: center; gap: 16px; }
+    .back-btn { display: flex; align-items: center; gap: 7px; color: var(--text-light); text-decoration: none; font-size: .8rem; font-weight: 500; padding: 6px 12px; border-radius: var(--radius-sm); transition: background var(--t), color var(--t); }
+    .back-btn:hover { background: rgba(255,255,255,.07); color: var(--gold-light); }
+    .nav-brand { font-family: 'Playfair Display', serif; font-size: 1.1rem; color: var(--white); }
+    .nav-brand span { color: var(--gold); }
+    .lang-toggle { display: flex; gap: 4px; background: rgba(255,255,255,.06); border-radius: 8px; padding: 3px; }
+    .lang-btn { padding: 5px 12px; border: none; border-radius: 6px; font-family: 'DM Sans', sans-serif; font-size: .75rem; font-weight: 600; cursor: pointer; background: transparent; color: var(--text-light); transition: all var(--t); }
+    .lang-btn.active { background: var(--gold); color: var(--navy); }
+
+    .hero { background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%); padding: 52px 32px 44px; text-align: center; position: relative; overflow: hidden; }
+    .hero::before { content: ''; position: absolute; inset: 0; background-image: linear-gradient(rgba(201,168,76,.05) 1px, transparent 1px), linear-gradient(90deg, rgba(201,168,76,.05) 1px, transparent 1px); background-size: 40px 40px; }
+    .hero-icon { width: 72px; height: 72px; background: linear-gradient(135deg, var(--gold), var(--gold-light)); border-radius: 20px; display: flex; align-items: center; justify-content: center; font-size: 32px; margin: 0 auto 18px; box-shadow: 0 12px 32px rgba(201,168,76,.4); position: relative; z-index: 1; }
+    .hero h1 { font-family: 'Playfair Display', serif; font-size: 2rem; font-weight: 700; color: var(--white); position: relative; z-index: 1; }
+    .hero h1 span { color: var(--gold); }
+    .hero-sub { color: var(--text-light); font-size: .88rem; margin-top: 8px; position: relative; z-index: 1; font-weight: 300; }
+    .hero-rule { width: 44px; height: 3px; background: linear-gradient(90deg, var(--gold), var(--gold-light)); border-radius: 3px; margin: 14px auto 0; position: relative; z-index: 1; }
+
+    .content { max-width: 820px; margin: 0 auto; padding: 40px 24px 60px; }
+
+    .section-card { background: var(--white); border-radius: var(--radius); border: 1px solid rgba(201,168,76,.15); overflow: hidden; margin-bottom: 24px; box-shadow: 0 2px 16px rgba(13,27,42,.06); animation: fadeUp .4s ease both; }
+    .section-card:nth-child(2) { animation-delay: .05s; }
+    .section-card:nth-child(3) { animation-delay: .10s; }
+    .section-card:nth-child(4) { animation-delay: .15s; }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
+
+    .card-header { background: linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 100%); padding: 18px 24px; display: flex; align-items: center; gap: 14px; }
+    .card-header-icon { width: 38px; height: 38px; background: rgba(201,168,76,.18); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+    .card-header h2 { font-family: 'Playfair Display', serif; font-size: 1.05rem; color: var(--white); font-weight: 600; }
+    .card-header p { font-size: .76rem; color: var(--text-light); margin-top: 2px; font-weight: 300; }
+    .card-body { padding: 24px; }
+
+    /* Fee Cards Grid */
+    .fee-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 16px; }
+    .fee-card { background: var(--cream-bg); border-radius: var(--radius-sm); padding: 18px 16px; border: 1px solid rgba(201,168,76,.12); transition: all var(--t); text-align: center; }
+    .fee-card:hover { border-color: var(--gold); transform: translateY(-3px); box-shadow: 0 8px 24px rgba(201,168,76,.14); }
+    .fee-card-dept { font-size: .8rem; font-weight: 600; color: var(--text-mid); margin-bottom: 8px; }
+    .fee-range { font-family: 'Playfair Display', serif; font-size: 1.15rem; font-weight: 700; color: var(--gold); line-height: 1.2; }
+    .fee-unit { font-size: .7rem; color: var(--text-light); margin-top: 4px; font-weight: 300; }
+
+    /* Breakdown Table */
+    .break-table { width: 100%; border-collapse: collapse; }
+    .break-table th { padding: 10px 14px; text-align: left; font-size: .72rem; font-weight: 700; color: var(--text-light); text-transform: uppercase; letter-spacing: .06em; border-bottom: 2px solid rgba(201,168,76,.15); background: rgba(13,27,42,.03); }
+    .break-table td { padding: 12px 14px; border-bottom: 1px solid rgba(13,27,42,.05); font-size: .84rem; }
+    .break-table tr:last-child td { border-bottom: none; }
+    .break-table tr:hover td { background: rgba(201,168,76,.04); }
+    .item-name { font-weight: 500; color: var(--text-dark); }
+    .item-amt { font-weight: 600; color: var(--gold); font-family: 'Playfair Display', serif; }
+    .item-when { font-size: .72rem; color: var(--text-light); }
+
+    /* Payment Methods */
+    .pay-grid { display: flex; flex-wrap: wrap; gap: 10px; }
+    .pay-badge { display: flex; align-items: center; gap: 8px; padding: 10px 16px; background: var(--cream-bg); border-radius: var(--radius-sm); border: 1px solid rgba(201,168,76,.15); font-size: .82rem; font-weight: 500; color: var(--text-mid); transition: all var(--t); }
+    .pay-badge:hover { border-color: var(--gold); background: rgba(201,168,76,.06); color: var(--text-dark); }
+    .pay-ico { font-size: 20px; }
+
+    .notice { display: flex; align-items: flex-start; gap: 12px; background: rgba(201,168,76,.08); border: 1px solid rgba(201,168,76,.25); border-radius: var(--radius-sm); padding: 14px 16px; margin-top: 20px; }
+    .notice-icon { font-size: 18px; flex-shrink: 0; }
+    .notice-text { font-size: .82rem; color: var(--text-mid); line-height: 1.55; }
+    .notice-text strong { color: var(--text-dark); }
+
+    .fab { position: fixed; bottom: 28px; right: 28px; background: linear-gradient(135deg, var(--gold), var(--gold-light)); color: var(--navy); border: none; border-radius: 50px; padding: 12px 22px; font-family: 'DM Sans', sans-serif; font-size: .83rem; font-weight: 600; cursor: pointer; box-shadow: 0 8px 24px rgba(201,168,76,.4); display: flex; align-items: center; gap: 8px; text-decoration: none; transition: transform var(--t), box-shadow var(--t); z-index: 50; }
+    .fab:hover { transform: translateY(-3px); box-shadow: 0 14px 32px rgba(201,168,76,.5); }
+
+    @media (max-width: 640px) {
+      .hero { padding: 36px 20px 32px; } .hero h1 { font-size: 1.55rem; }
+      .content { padding: 24px 16px 80px; }
+      .fee-grid { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="topnav">
+    <div class="nav-left">
+      <a class="back-btn" href="index.html">← <span data-en="Back to Chat" data-bn="চ্যাটে ফিরুন">Back to Chat</span></a>
+      <div class="nav-brand"><span>Uni</span>guide</div>
+    </div>
+    <div class="lang-toggle">
+      <button class="lang-btn active" id="btn-en" onclick="setLang('en')">EN</button>
+      <button class="lang-btn" id="btn-bn" onclick="setLang('bn')">বাং</button>
+    </div>
+  </nav>
+
+  <div class="hero">
+    <div class="hero-icon">💰</div>
+    <h1 data-en="Tuition <span>Fees</span>" data-bn="টিউশন <span>ফি</span>">Tuition <span>Fees</span></h1>
+    <p class="hero-sub" data-en="Semester-wise fee structure for all programs" data-bn="সকল প্রোগ্রামের সেমিস্টার ভিত্তিক ফি কাঠামো">Semester-wise fee structure for all programs</p>
+    <div class="hero-rule"></div>
+  </div>
+
+  <div class="content">
+
+    <!-- Semester Fees -->
+    <div class="section-card">
+      <div class="card-header">
+        <div class="card-header-icon">📚</div>
+        <div>
+          <h2 data-en="Semester Fees by Department" data-bn="বিভাগ অনুযায়ী সেমিস্টার ফি">Semester Fees by Department</h2>
+          <p data-en="Approximate per-semester tuition (BDT)" data-bn="আনুমানিক প্রতি সেমিস্টার টিউশন (BDT)">Approximate per-semester tuition (BDT)</p>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="fee-grid">
+          <div class="fee-card">
+            <div class="fee-card-dept">CSE</div>
+            <div class="fee-range" data-en="22,000–28,000" data-bn="২২,০০০–২৮,০০০">22,000–28,000</div>
+            <div class="fee-unit" data-en="BDT / Semester" data-bn="টাকা / সেমিস্টার">BDT / Semester</div>
+          </div>
+          <div class="fee-card">
+            <div class="fee-card-dept">EEE</div>
+            <div class="fee-range" data-en="22,000–28,000" data-bn="২২,০০০–২৮,০০০">22,000–28,000</div>
+            <div class="fee-unit" data-en="BDT / Semester" data-bn="টাকা / সেমিস্টার">BDT / Semester</div>
+          </div>
+          <div class="fee-card">
+            <div class="fee-card-dept">BBA</div>
+            <div class="fee-range" data-en="18,000–24,000" data-bn="১৮,০০০–২৪,০০০">18,000–24,000</div>
+            <div class="fee-unit" data-en="BDT / Semester" data-bn="টাকা / সেমিস্টার">BDT / Semester</div>
+          </div>
+          <div class="fee-card">
+            <div class="fee-card-dept" data-en="English / Arts" data-bn="ইংরেজি">English / Arts</div>
+            <div class="fee-range" data-en="14,000–18,000" data-bn="১৪,০০০–১৮,০০০">14,000–18,000</div>
+            <div class="fee-unit" data-en="BDT / Semester" data-bn="টাকা / সেমিস্টার">BDT / Semester</div>
+          </div>
+          <div class="fee-card">
+            <div class="fee-card-dept">Law / LLB</div>
+            <div class="fee-range" data-en="16,000–20,000" data-bn="১৬,০০০–২০,০০০">16,000–20,000</div>
+            <div class="fee-unit" data-en="BDT / Semester" data-bn="টাকা / সেমিস্টার">BDT / Semester</div>
+          </div>
+          <div class="fee-card">
+            <div class="fee-card-dept" data-en="Architecture" data-bn="স্থাপত্য">Architecture</div>
+            <div class="fee-range" data-en="24,000–32,000" data-bn="২৪,০০০–৩২,০০০">24,000–32,000</div>
+            <div class="fee-unit" data-en="BDT / Semester" data-bn="টাকা / সেমিস্টার">BDT / Semester</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- One-Time Fees -->
+    <div class="section-card">
+      <div class="card-header">
+        <div class="card-header-icon">📝</div>
+        <div>
+          <h2 data-en="One-Time Admission Fees" data-bn="একবারের ভর্তি ফি">One-Time Admission Fees</h2>
+          <p data-en="Paid only at the time of admission" data-bn="শুধুমাত্র ভর্তির সময় প্রদান করতে হবে">Paid only at the time of admission</p>
+        </div>
+      </div>
+      <div class="card-body">
+        <table class="break-table">
+          <thead>
+            <tr>
+              <th data-en="Fee Item" data-bn="ফি আইটেম">Fee Item</th>
+              <th data-en="Amount (BDT)" data-bn="পরিমাণ (টাকা)">Amount (BDT)</th>
+              <th data-en="When" data-bn="কখন">When</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="item-name" data-en="Registration Fee" data-bn="রেজিস্ট্রেশন ফি">Registration Fee</span></td>
+              <td><span class="item-amt" data-en="5,000" data-bn="৫,০০০">5,000</span></td>
+              <td><span class="item-when" data-en="At Admission" data-bn="ভর্তির সময়">At Admission</span></td>
+            </tr>
+            <tr>
+              <td><span class="item-name" data-en="Library Fee" data-bn="লাইব্রেরি ফি">Library Fee</span></td>
+              <td><span class="item-amt" data-en="1,000" data-bn="১,০০০">1,000</span></td>
+              <td><span class="item-when" data-en="At Admission" data-bn="ভর্তির সময়">At Admission</span></td>
+            </tr>
+            <tr>
+              <td><span class="item-name" data-en="Student ID Card" data-bn="স্টুডেন্ট ID কার্ড">Student ID Card</span></td>
+              <td><span class="item-amt" data-en="300" data-bn="৩০০">300</span></td>
+              <td><span class="item-when" data-en="At Admission" data-bn="ভর্তির সময়">At Admission</span></td>
+            </tr>
+            <tr>
+              <td><span class="item-name" data-en="Lab Fee (CSE/EEE only)" data-bn="ল্যাব ফি (শুধু CSE/EEE)">Lab Fee (CSE/EEE only)</span></td>
+              <td><span class="item-amt" data-en="3,000" data-bn="৩,০০০">3,000</span></td>
+              <td><span class="item-when" data-en="Per Semester" data-bn="প্রতি সেমিস্টার">Per Semester</span></td>
+            </tr>
+            <tr>
+              <td><span class="item-name" data-en="Application Fee" data-bn="আবেদন ফি">Application Fee</span></td>
+              <td><span class="item-amt" data-en="500" data-bn="৫০০">500</span></td>
+              <td><span class="item-when" data-en="Online Application" data-bn="অনলাইন আবেদন">Online Application</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Payment Methods -->
+    <div class="section-card">
+      <div class="card-header">
+        <div class="card-header-icon">💳</div>
+        <div>
+          <h2 data-en="Accepted Payment Methods" data-bn="গ্রহণযোগ্য পেমেন্ট পদ্ধতি">Accepted Payment Methods</h2>
+          <p data-en="You can pay through any of the following" data-bn="নিচের যেকোনো পদ্ধতিতে পেমেন্ট করতে পারবেন">You can pay through any of the following</p>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="pay-grid">
+          <div class="pay-badge"><span class="pay-ico">📱</span>bKash</div>
+          <div class="pay-badge"><span class="pay-ico">🚀</span>Rocket</div>
+          <div class="pay-badge"><span class="pay-ico">🏦</span><span data-en="Bank Transfer" data-bn="ব্যাংক ট্রান্সফার">Bank Transfer</span></div>
+          <div class="pay-badge"><span class="pay-ico">💵</span><span data-en="Cash (Counter)" data-bn="নগদ (কাউন্টার)">Cash (Counter)</span></div>
+          <div class="pay-badge"><span class="pay-ico">💳</span><span data-en="Debit / Credit Card" data-bn="ডেবিট / ক্রেডিট কার্ড">Debit / Credit Card</span></div>
+          <div class="pay-badge"><span class="pay-ico">📲</span>Nagad</div>
+        </div>
+        <div class="notice">
+          <div class="notice-icon">💡</div>
+          <div class="notice-text" data-en="<strong>Fee Waiver:</strong> Students with scholarships will have the waived amount deducted automatically. Contact the accounts office for installment options." data-bn="<strong>ফি মওকুফ:</strong> বৃত্তিপ্রাপ্ত শিক্ষার্থীদের মওকুফকৃত অর্থ স্বয়ংক্রিয়ভাবে কেটে নেওয়া হবে। কিস্তির সুযোগের জন্য হিসাব অফিসে যোগাযোগ করুন।"><strong>Fee Waiver:</strong> Students with scholarships will have the waived amount deducted automatically. Contact the accounts office for installment options.</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <a class="fab" href="index.html">💬 <span data-en="Ask in Chat" data-bn="চ্যাটে জিজ্ঞেস করুন">Ask in Chat</span></a>
+
+  <script>
+    var lang = localStorage.getItem('ug_lang') || 'en';
+    function setLang(l) {
+      lang = l;
+      localStorage.setItem('ug_lang', l);
+      document.getElementById('btn-en').classList.toggle('active', l === 'en');
+      document.getElementById('btn-bn').classList.toggle('active', l === 'bn');
+      document.querySelectorAll('[data-en]').forEach(function(el) {
+        var val = el.getAttribute('data-' + l);
+        if (val) el.innerHTML = val;
+      });
+    }
+    setLang(lang);
+  </script>
+</body>
+</html>

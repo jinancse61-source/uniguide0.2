@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Uniguide – University Admission Help Desk</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body class="chat-page">
+
+  <!-- ══════════ SIDEBAR ══════════ -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sb-top">
+      <button class="sb-btn has-tip" id="collapseBtn">
+        <span class="sb-icon">☰</span>
+        <span class="sb-label">Close sidebar</span>
+        <span class="tip">Close sidebar</span>
+      </button>
+      <button class="sb-btn new-chat-btn has-tip" id="newChatBtn">
+        <span class="sb-icon">＋</span>
+        <span class="sb-label">New Chat</span>
+        <span class="tip">New chat</span>
+      </button>
+    </div>
+
+    <div class="sb-mid" id="sbMid">
+      <div class="sb-sec-lbl">Recent</div>
+      <div id="chatList">
+        <div class="sb-empty">No chats yet.<br>Start a new conversation!</div>
+      </div>
+    </div>
+
+    <div class="sb-bot">
+      <button class="profile-btn has-tip" id="profileBtn">
+        <div class="avatar" id="sbAvatar">U</div>
+        <div class="profile-info">
+          <div class="pname" id="sbName">User</div>
+          <div class="phint">View profile</div>
+        </div>
+        <span class="tip">Profile</span>
+      </button>
+      <div class="pdrop" id="pdrop">
+        <div class="dd-email" id="ddEmail">user@example.com</div>
+        <div class="dd-div"></div>
+        <button class="dd-item"><span class="dd-ico">⚙️</span>Settings</button>
+        <button class="dd-item" id="ddLang"><span class="dd-ico">🌐</span>Language</button>
+        <button class="dd-item"><span class="dd-ico">ℹ️</span>Learn More</button>
+        <div class="dd-div"></div>
+        <button class="dd-item danger" id="ddLogout"><span class="dd-ico">🚪</span>Logout</button>
+      </div>
+    </div>
+  </aside>
+
+  <div class="sb-overlay" id="sbOverlay"></div>
+
+  <!-- ══════════ MAIN ══════════ -->
+  <main class="main">
+
+    <!-- Topbar -->
+    <div class="topbar">
+      <button class="mob-toggle" id="mobToggle" aria-label="Open sidebar">☰</button>
+      <div class="topbar-logo">
+        <div class="topbar-badge">🎓</div>
+        <div>
+          <span class="topbar-title"><span>Uni</span>guide</span>
+          <span class="topbar-sub" id="topbarSub">&middot; State University of Bangladesh</span>
+        </div>
+      </div>
+      <div class="topbar-right">
+        <div class="status-pill">
+          <div class="status-dot"></div>
+          <span id="statusText">Available 24/7</span>
+        </div>
+        <div class="lang-toggle">
+          <button class="lang-btn active" id="btn-en" onclick="setLang('en')">EN</button>
+          <button class="lang-btn" id="btn-bn" onclick="setLang('bn')">বাং</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Chat Area — JS fills this -->
+    <div class="chat-area" id="chatArea"></div>
+
+    <!-- ══════════ INPUT AREA ══════════ -->
+    <div class="input-wrap-outer">
+      <div class="input-row">
+
+        <!-- Quick Actions Button + Popup (LEFT side of textarea) -->
+        <div class="qa-wrap">
+          <!-- Pure CSS dots icon — works everywhere including GitHub Pages -->
+          <button class="qa-btn" id="qaBtn" title="Quick actions" aria-label="Quick actions">
+            <span class="qa-dots-icon">
+              <span></span><span></span><span></span>
+              <span></span><span></span><span></span>
+              <span></span><span></span><span></span>
+            </span>
+          </button>
+
+          <!-- Popup menu -->
+          <div class="qa-menu" id="qaMenu" role="menu">
+            <div class="qa-menu-header" id="qaMenuHeader">Quick Topics</div>
+            <button class="qa-item" data-topic="admission requirements" role="menuitem" onclick="window.location.href='requirement.html'">
+              <span class="qa-ico">📋</span><span class="qa-label" data-en="Requirements" data-bn="ভর্তির যোগ্যতা">Requirements</span>
+            </button>
+            <button class="qa-item" data-topic="GPA requirement" role="menuitem" onclick="window.location.href='gpa.html'">
+              <span class="qa-ico">📊</span><span class="qa-label" data-en="GPA" data-bn="জিপিএ">GPA</span>
+            </button>
+            <button class="qa-item" data-topic="tuition fees" role="menuitem" onclick="window.location.href='fees.html'">
+              <span class="qa-ico">💰</span><span class="qa-label" data-en="Fees" data-bn="ফি">Fees</span>
+            </button>
+            <button class="qa-item" data-topic="scholarship" role="menuitem" onclick="window.location.href='scholarship.html'">
+              <span class="qa-ico">🏆</span><span class="qa-label" data-en="Scholarships" data-bn="বৃত্তি">Scholarships</span>
+            </button>
+            <button class="qa-item" data-topic="application deadline" role="menuitem" onclick="window.location.href='deadline.html'">
+              <span class="qa-ico">📅</span><span class="qa-label" data-en="Deadline" data-bn="শেষ তারিখ">Deadline</span>
+            </button>
+            <button class="qa-item" data-topic="how to apply" role="menuitem" onclick="window.location.href='howtoapply.html'">
+              <span class="qa-ico">✍️</span><span class="qa-label" data-en="How to Apply" data-bn="কীভাবে আবেদন করবেন">How to Apply</span>
+            </button>
+            
+          </div>
+        </div>
+        <textarea
+          id="userInput"ু
+          rows="1"
+          placeholder="Ask anything about admissions…"
+          onkeydown="handleKey(event)"
+          oninput="autoResize(this)"
+        ></textarea>
+
+        <!-- New clear button: broom/sweep SVG icon -->
+        <button class="ibtn clear-btn" onclick="clearCurrentChat()" id="clearBtn" title="Clear chat">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="16" height="16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="3 6 5 6 21 6"></polyline>
+            <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path>
+            <path d="M10 11v6"></path>
+            <path d="M14 11v6"></path>
+            <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"></path>
+          </svg>
+        </button>
+
+        <!-- Send button -->
+        <button class="ibtn send-btn" onclick="sendMessage()" title="Send">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="16" height="16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="22" y1="2" x2="11" y2="13"></line>
+            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+          </svg>
+        </button>
+
+      </div>
+    </div>
+  </main>
+
+  <div class="toast" id="toast"></div>
+  <script src="script.js"></script>
+</body>
+</html>
